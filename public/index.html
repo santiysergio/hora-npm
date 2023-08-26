@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reloj de Madrid</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+        }
+
+        #clock {
+            font-size: 72px;
+            display: flex;
+            gap: 10px; /* Espacio entre los dígitos */
+        }
+
+        .digit-container {
+            perspective: 400px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+        }
+
+        .digit {
+            width: 64px;
+            height: 64px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            transform-style: preserve-3d;
+        }
+
+        .animating {
+            animation: digitChange 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes digitChange {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            25% {
+                transform: translateY(-20%);
+            }
+            50% {
+                transform: translateY(-40%);
+            }
+            75% {
+                transform: translateY(-60%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="clock" class="digit-container">
+        <div class="digit" id="hour">00</div>
+        <div class="digit" id="minute">00</div>
+        <div class="digit" id="second">00</div>
+    </div>
+    <script>
+        function updateClock() {
+            fetch("https://hora-25p1otre5-santiysergio.vercel.app/get_time")
+    .then(response => response.json())
+    .then(data => {
+        const time = data.time.split(":");
+        animateDigitChange(document.getElementById("hour"), time[0]);
+        animateDigitChange(document.getElementById("minute"), time[1]);
+        animateDigitChange(document.getElementById("second"), time[2]);
+    });
+
+        }
+        
+        function animateDigitChange(element, newValue) {
+            if (element.textContent !== newValue) {
+                element.textContent = newValue;
+                element.classList.add("animating");
+                setTimeout(() => {
+                    element.classList.remove("animating");
+                }, 500);
+            }
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000); // Actualizar cada segundo
+    </script>
+</body>
+</html>
